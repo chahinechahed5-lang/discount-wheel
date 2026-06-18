@@ -12,9 +12,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Discord OAuth Settings
+// Discord OAuth & Webhook Settings
 const DISCORD_CLIENT_ID = "1516896455191822496"; 
 const REDIRECT_URI = "https://chahinechahed5-lang.github.io/discount-wheel/";
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1517160213377974282/d-gX6PwSn0LR6bPpyAezX_i7zI3nI2rgy1zsacItitxee8DNK-lEdPb24Rcu-J1qjaAd"; // <-- REPLACE WITH YOUR DISCORD WEBHOOK URL
 
 // DOM Elements
 const loginSection = document.getElementById('login-section');
@@ -74,7 +75,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 // 🎡 PRIZE SYSTEM PROBABILITY ENGINE & VISUAL WHEEL CONFIG
-
 const prizes = [
     { name: "🎁 FREE ITEM", chance: 0.001, color: "#d63031" },      // 0.1%
     { name: "💥 50% OFF", chance: 0.01, color: "#e17055" },         // 1%
@@ -93,7 +93,7 @@ const arc = Math.PI * 2 / prizes.length;
 
 function drawWheel() {
     for (let i = 0; i < prizes.length; i++) {
-        // Draw slices counter-clockwise so indexing matches standard visual reading
+        // Draw slices aligned so index 0 centers upwards towards the pin
         const angle = startAngle + i * arc;
         ctx.beginPath();
         ctx.arc(radius, radius, radius, angle, angle + arc, false);
@@ -193,19 +193,15 @@ spinBtn.addEventListener('click', async () => {
         }
     }
 
-    // 2. Calculate the exact angle offset required to align the slice center with the top pin (12 o'clock / -90 degrees)
+    // 2. Calculate the exact angle offset required to align the middle of the slice with the top pin (12 o'clock position)
     const prizeIndex = prizes.indexOf(chosenPrizeObj);
-    
-    // Calculate the angle where this slice naturally sits
-    const sliceNaturalAngle = prizeIndex * arc;
-    
-    // Calculate how much we need to rotate so the slice lands exactly at the top (Math.PI * 1.5 radians)
-    // We adjust by subtracting the slice center angle
-    const targetOffset = (Math.PI * 1.5) - (sliceNaturalAngle + (arc / 2));
+    const targetSliceCenter = prizeIndex * arc + (arc / 2);
+    const targetOffset = (Math.PI * 1.5) - targetSliceCenter;
 
-    // 3. Trigger Animation & Resolve Data
+    // 3. Trigger Animation
     spinWheelVisual(targetOffset);
 
+    // 4. Save to database and trigger Discord announcement
     setTimeout(async () => {
         try {
             await db.collection('spins').doc(currentUser.id).set({
@@ -218,9 +214,20 @@ spinBtn.addEventListener('click', async () => {
             resultDisplay.textContent = `🎉 You won: ${chosenPrizeObj.name}!`;
             spinBtn.textContent = "Done";
 
+            // Announce to Discord announcement channel via webhook
+            if (DISCORD_WEBHOOK_URL && DISCORD_WEBHOOK_URL !== "YOUR_DISCORD_WEBHOOK_URL_HERE") {
+                await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: `🎉 **${currentUser.username}** just spun the wheel and received **${chosenPrizeObj.name}**! 🎰`
+                    })
+                });
+            }
+
         } catch (error) {
-            console.error("Error saving spin result:", error);
-            alert("Database error occurred. Please try again.");
+            console.error("Error saving spin result or sending announcement:", error);
+            alert("Database/announcement error occurred. Please try again.");
             spinBtn.disabled = false;
         }
     }, 5200); // Resolve right after the 5s animation completes
