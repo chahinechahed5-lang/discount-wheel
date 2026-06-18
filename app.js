@@ -78,10 +78,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 const prizes = [
     { name: "🎁 FREE ITEM", chance: 0.001, color: "#d63031" },      // 0.1%
     { name: "💥 50% OFF", chance: 0.01, color: "#e17055" },         // 1%
-    { name: "🔥 25% OFF", chance: 0.10, color: "#fdcb6e" },         // 10%
-    { name: "20% OFF", chance: 0.244, color: "#00cec9" },           // 24.4%
-    { name: "15% OFF", chance: 0.245, color: "#0984e3" },           // 24.5%
-    { name: "5% OFF", chance: 0.40, color: "#6c5ce7" }            // 40%
+    { name: "🔥 25% OFF", chance: 0.05, color: "#fdcb6e" },         // 5%
+    { name: "20% OFF", chance: 0.10, color: "#00cec9" },            // 10%
+    { name: "15% OFF", chance: 0.194, color: "#0984e3" },           // 19.4%
+    { name: "5% OFF", chance: 0.645, color: "#6c5ce7" }            // 64.5%
+];
 ];
 
 // Canvas Wheel Setup
