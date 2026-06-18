@@ -67,6 +67,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         const hasSpun = await checkIfSpun(currentUser.id);
         if (hasSpun) {
             spinBtn.disabled = true;
+            spinBtn.textContent = "Spun";
             resultDisplay.textContent = "You have already claimed your prize.";
         }
     }
@@ -81,7 +82,6 @@ const prizes = [
     { name: "15% OFF", chance: 0.20, color: "#0984e3" },            // 20%
     { name: "5% OFF", chance: 0.539, color: "#6c5ce7" }           // 53.9%
 ];
-];
 
 // Canvas Wheel Setup
 const canvas = document.getElementById("canvas");
@@ -92,6 +92,7 @@ const arc = Math.PI * 2 / prizes.length;
 
 function drawWheel() {
     for (let i = 0; i < prizes.length; i++) {
+        // Draw slices counter-clockwise so indexing matches standard visual reading
         const angle = startAngle + i * arc;
         ctx.beginPath();
         ctx.arc(radius, radius, radius, angle, angle + arc, false);
@@ -101,12 +102,12 @@ function drawWheel() {
         ctx.stroke();
         ctx.save();
 
-        // Text styling
+        // Text styling & placement
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 12px Arial";
+        ctx.font = "bold 13px Arial";
         ctx.translate(
-            radius + Math.cos(angle + arc / 2) * (radius / 1.5),
-            radius + Math.sin(angle + arc / 2) * (radius / 1.5)
+            radius + Math.cos(angle + arc / 2) * (radius / 1.6),
+            radius + Math.sin(angle + arc / 2) * (radius / 1.6)
         );
         ctx.rotate(angle + arc / 2 + Math.PI / 2);
         ctx.fillText(prizes[i].name, -ctx.measureText(prizes[i].name).width / 2, 0);
@@ -114,16 +115,17 @@ function drawWheel() {
     }
 }
 
-// Spin Resolution & Animation
+// Spin Resolution & Animation Variables
 let spinTimeout = null;
 let startAngleValue = 0;
-let arcRotations = 0;
+let totalAngleToSpin = 0;
 let spinTime = 0;
 let spinTimeTotal = 0;
 
-function spinWheelVisual() {
+function spinWheelVisual(targetAngle) {
     spinTime = 0;
-    spinTimeTotal = Math.random() * 3000 + 4000; // spin between 4 to 7 seconds
+    spinTimeTotal = 5000; // Fixed 5-second spin duration
+    totalAngleToSpin = (Math.PI * 16) + targetAngle; // 8 full rotations + offset
     rotateWheel();
 }
 
@@ -133,26 +135,28 @@ function rotateWheel() {
         stopRotateWheel();
         return;
     }
-    const spinAngle = easeOut(spinTime, 0, arcRotations, spinTimeTotal);
-    startAngleValue += (spinAngle * Math.PI / 180);
-    ctx.clearRect(0,0,500,500);
+    
+    // Easing formula for smooth deceleration
+    const easeOutVal = easeOut(spinTime, 0, 1, spinTimeTotal);
+    startAngleValue = easeOutVal * totalAngleToSpin;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     startAngle = startAngleValue;
     drawWheel();
+    
     spinTimeout = setTimeout(rotateWheel, 30);
 }
 
-function easeOut(t, b, c, d) {
-    const ts = (t/=d)*t;
-    const tc = ts*t;
-    return b+c*(tc + -3*ts + 3*t);
+function stopRotateWheel() {
+    clearTimeout(spinTimeout);
+    // Ensure the wheel rests exactly on the calculated final angle
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    startAngle = totalAngleToSpin;
+    drawWheel();
 }
 
-function getPrizeIndexByAngle(angle) {
-    const degrees = (angle * 180 / Math.PI + 90) % 360;
-    const arcDegrees = 360 / prizes.length;
-    // Pin is at top (0/360 degrees). Inverse lookup based on angle.
-    const index = Math.floor((360 - degrees) / arcDegrees) % prizes.length;
-    return index < 0 ? index + prizes.length : index;
+function easeOut(t, b, c, d) {
+    return c * (1 - Math.pow(1 - t / d, 3)) + b;
 }
 
 // Database check: Did the user spin already?
@@ -173,11 +177,12 @@ spinBtn.addEventListener('click', async () => {
     }
 
     spinBtn.disabled = true;
+    spinBtn.textContent = "Spinning...";
 
-    // Determine the winning slice from probability engine first
+    // 1. Determine winning slice from probability engine
     const rand = Math.random();
     let cumulativeChance = 0;
-    let chosenPrizeObj = prizes[prizes.length - 1]; // fallback
+    let chosenPrizeObj = prizes[prizes.length - 1];
 
     for (let i = 0; i < prizes.length; i++) {
         cumulativeChance += prizes[i].chance;
@@ -187,15 +192,19 @@ spinBtn.addEventListener('click', async () => {
         }
     }
 
-    // Calculate rotation offset so the chosen slice aligns with the top pointer (Pin)
+    // 2. Calculate the exact angle offset required to align the slice center with the top pin (12 o'clock / -90 degrees)
     const prizeIndex = prizes.indexOf(chosenPrizeObj);
-    const desiredAngle = (prizes.length - prizeIndex) * arc; 
-    arcRotations = 10 * Math.PI * 2 + desiredAngle; // Multi-rotations + offset
+    
+    // Calculate the angle where this slice naturally sits
+    const sliceNaturalAngle = prizeIndex * arc;
+    
+    // Calculate how much we need to rotate so the slice lands exactly at the top (Math.PI * 1.5 radians)
+    // We adjust by subtracting the slice center angle
+    const targetOffset = (Math.PI * 1.5) - (sliceNaturalAngle + (arc / 2));
 
-    // Start Visual Animation
-    spinWheelVisual();
+    // 3. Trigger Animation & Resolve Data
+    spinWheelVisual(targetOffset);
 
-    // Save to Firestore and resolve result after wheel animation completes (~7 seconds)
     setTimeout(async () => {
         try {
             await db.collection('spins').doc(currentUser.id).set({
@@ -213,7 +222,7 @@ spinBtn.addEventListener('click', async () => {
             alert("Database error occurred. Please try again.");
             spinBtn.disabled = false;
         }
-    }, 7200);
+    }, 5200); // Resolve right after the 5s animation completes
 });
 
 // Initial Draw
