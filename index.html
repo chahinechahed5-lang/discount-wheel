@@ -17,7 +17,13 @@
 
         <div id="wheel-section" class="hidden">
             <h2>Welcome, <span id="username-display">User</span>!</h2>
-            <button id="spin-btn" class="btn-spin">🎡 SPIN THE WHEEL</button>
+            
+            <div class="wheel-container">
+                <canvas id="canvas" width="300" height="300"></canvas>
+                <button id="spin-btn" class="btn-spin">🎡 SPIN</button>
+                <div class="pin">▼</div>
+            </div>
+
             <div id="result-display"></div>
         </div>
     </div>
