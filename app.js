@@ -64,11 +64,11 @@ window.addEventListener('DOMContentLoaded', async () => {
         wheelSection.classList.remove('hidden');
         usernameDisplay.textContent = currentUser.username;
         
-        // Check if user already spun
-        const hasSpun = await checkIfSpun(currentUser.id);
-        if (hasSpun) {
+        // Check if user already spin
+        const hasSpin = await checkIfSpin(currentUser.id);
+        if (hasSpin) {
             spinBtn.disabled = true;
-            spinBtn.textContent = "Spun";
+            spinBtn.textContent = "Spin";
             resultDisplay.textContent = "You have already claimed your prize.";
         }
     }
@@ -162,7 +162,7 @@ function easeOut(t, b, c, d) {
 }
 
 // Database check: Did the user spin already?
-async function checkIfSpun(discordId) {
+async function checkIfSpin(discordId) {
     const snapshot = await db.collection('spins').where('discordId', '==', discordId).get();
     return !snapshot.empty;
 }
@@ -171,9 +171,9 @@ async function checkIfSpun(discordId) {
 spinBtn.addEventListener('click', async () => {
     if (!currentUser) return;
 
-    const alreadySpun = await checkIfSpun(currentUser.id);
-    if (alreadySpun) {
-        alert("Nice try! You've already spun the wheel.");
+    const alreadySpin = await checkIfSpin(currentUser.id);
+    if (alreadySpin) {
+        alert("Nice try! You've already spin the wheel.");
         location.reload();
         return;
     }
@@ -221,7 +221,7 @@ spinBtn.addEventListener('click', async () => {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        content: `🎉 **${currentUser.username}** just spun the wheel and received **${chosenPrizeObj.name}**! 🎰`
+                        content: `🎉 **${currentUser.username}** just spin the wheel and received **${chosenPrizeObj.name}**! 🎰`
                     })
                 });
             }
