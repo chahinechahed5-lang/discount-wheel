@@ -79,7 +79,8 @@ const prizes = [
     { name: "🔥 25% OFF", chance: 0.10, color: "#fdcb6e" },         // 10%
     { name: "20% OFF", chance: 0.15, color: "#00cec9" },            // 15%
     { name: "15% OFF", chance: 0.20, color: "#0984e3" },            // 20%
-    { name: "Smaller Discount", chance: 0.539, color: "#6c5ce7" }   // 53.9%
+    { name: "5% OFF", chance: 0.539, color: "#6c5ce7" }           // 53.9%
+];
 ];
 
 // Canvas Wheel Setup
