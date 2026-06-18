@@ -74,13 +74,14 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 // 🎡 PRIZE SYSTEM PROBABILITY ENGINE & VISUAL WHEEL CONFIG
+
 const prizes = [
     { name: "🎁 FREE ITEM", chance: 0.001, color: "#d63031" },      // 0.1%
     { name: "💥 50% OFF", chance: 0.01, color: "#e17055" },         // 1%
     { name: "🔥 25% OFF", chance: 0.10, color: "#fdcb6e" },         // 10%
-    { name: "20% OFF", chance: 0.15, color: "#00cec9" },            // 15%
-    { name: "15% OFF", chance: 0.20, color: "#0984e3" },            // 20%
-    { name: "5% OFF", chance: 0.539, color: "#6c5ce7" }           // 53.9%
+    { name: "20% OFF", chance: 0.244, color: "#00cec9" },           // 24.4%
+    { name: "15% OFF", chance: 0.245, color: "#0984e3" },           // 24.5%
+    { name: "5% OFF", chance: 0.40, color: "#6c5ce7" }            // 40%
 ];
 
 // Canvas Wheel Setup
