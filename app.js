@@ -214,7 +214,7 @@ spinBtn.addEventListener('click', async () => {
             spinBtn.textContent = "Spin";
 
             // Announce to Discord announcement channel via webhook
-            if (DISCORD_WEBHOOK_URL && DISCORD_WEBHOOK_URL !== "YOUR_DISCORD_WEBHOOK_URL_HERE") {
+            if (DISCORD_WEBHOOK_URL && DISCORD_WEBHOOK_URL !== "https://chahinechahed5-lang.github.io/discount-wheel/") {
                 await fetch(DISCORD_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
