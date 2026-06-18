@@ -63,7 +63,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         wheelSection.classList.remove('hidden');
         usernameDisplay.textContent = currentUser.username;
         
-        // Check if user already spun
+        // Check if user already spin
         const hasSpin = await checkIfSpin(currentUser.id);
         if (hasSpin) {
             spinBtn.disabled = true;
@@ -171,7 +171,7 @@ spinBtn.addEventListener('click', async () => {
 
     const alreadySpin = await checkIfSpin(currentUser.id);
     if (alreadySpin) {
-        alert("Nice try! You've already spun the wheel.");
+        alert("Nice try! You've already spin the wheel.");
         location.reload();
         return;
     }
@@ -219,7 +219,7 @@ spinBtn.addEventListener('click', async () => {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        content: `🎉 **${currentUser.username}** just spun the wheel and received **${chosenPrizeObj.name}**! 🎰`
+                        content: `🎉 **${currentUser.username}** just spin the wheel and received **${chosenPrizeObj.name}**! 🎰`
                     })
                 });
             }
