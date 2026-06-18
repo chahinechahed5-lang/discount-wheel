@@ -15,7 +15,7 @@ const db = firebase.firestore();
 // Discord OAuth & Webhook Settings
 const DISCORD_CLIENT_ID = "1516896455191822496"; 
 const REDIRECT_URI = "https://chahinechahed5-lang.github.io/discount-wheel/";
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1517160213377974282/d-gX6PwSn0LR6bPpyAezX_i7zI3nI2rgy1zsacItitxee8DNK-lEdPb24Rcu-J1qjaAd"; // <-- REPLACE WITH YOUR DISCORD WEBHOOK URL
+const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1517160213377974282/d-gX6PwSn0LR6bPpyAezX_i7zI3nI2rgy1zsacItitxee8DNK-lEdPb24Rcu-J1qjaAd"; 
 
 // DOM Elements
 const loginSection = document.getElementById('login-section');
@@ -64,7 +64,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         wheelSection.classList.remove('hidden');
         usernameDisplay.textContent = currentUser.username;
         
-        // Check if user already spin
+        // Check if user already spun
         const hasSpin = await checkIfSpin(currentUser.id);
         if (hasSpin) {
             spinBtn.disabled = true;
@@ -81,8 +81,7 @@ const prizes = [
     { name: "🔥 25% OFF", chance: 0.05, color: "#fdcb6e" },         // 5%
     { name: "20% OFF", chance: 0.10, color: "#00cec9" },            // 10%
     { name: "15% OFF", chance: 0.194, color: "#0984e3" },           // 19.4%
-    { name: "5% OFF", chance: 0.645, color: "#6c5ce7" }            // 64.5%
-];
+    { name: "5% OFF", chance: 0.645, color: "#6c5ce7" }           // 64.5%
 ];
 
 // Canvas Wheel Setup
@@ -173,7 +172,7 @@ spinBtn.addEventListener('click', async () => {
 
     const alreadySpin = await checkIfSpin(currentUser.id);
     if (alreadySpin) {
-        alert("Nice try! You've already spin the wheel.");
+        alert("Nice try! You've already spun the wheel.");
         location.reload();
         return;
     }
@@ -213,7 +212,7 @@ spinBtn.addEventListener('click', async () => {
             });
 
             resultDisplay.textContent = `🎉 You won: ${chosenPrizeObj.name}!`;
-            spinBtn.textContent = "Done";
+            spinBtn.textContent = "Spin";
 
             // Announce to Discord announcement channel via webhook
             if (DISCORD_WEBHOOK_URL && DISCORD_WEBHOOK_URL !== "YOUR_DISCORD_WEBHOOK_URL_HERE") {
@@ -221,7 +220,7 @@ spinBtn.addEventListener('click', async () => {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        content: `🎉 **${currentUser.username}** just spin the wheel and received **${chosenPrizeObj.name}**! 🎰`
+                        content: `🎉 **${currentUser.username}** just spun the wheel and received **${chosenPrizeObj.name}**! 🎰`
                     })
                 });
             }
