@@ -30,7 +30,7 @@ let currentUser = null;
 // Handle Discord Login Redirect
 loginBtn.addEventListener('click', () => {
     const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
-    window.location.assign(authUrl); // Using assign() ensures a hard navigation event
+    window.location.href = authUrl; // Forces hard redirect
 });
 // Check URL Hash for Discord Token on Page Load
 window.addEventListener('DOMContentLoaded', async () => {
