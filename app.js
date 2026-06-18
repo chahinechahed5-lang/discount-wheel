@@ -32,6 +32,7 @@ loginBtn.addEventListener('click', () => {
     const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
     window.location.href = authUrl; // Forces hard redirect
 });
+
 // Check URL Hash for Discord Token on Page Load
 window.addEventListener('DOMContentLoaded', async () => {
     const fragment = new URLSearchParams(window.location.hash.slice(1));
@@ -63,7 +64,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         wheelSection.classList.remove('hidden');
         usernameDisplay.textContent = currentUser.username;
         
-        // Check if user already spin
+        // Check if user already spun
         const hasSpin = await checkIfSpin(currentUser.id);
         if (hasSpin) {
             spinBtn.disabled = true;
@@ -171,7 +172,7 @@ spinBtn.addEventListener('click', async () => {
 
     const alreadySpin = await checkIfSpin(currentUser.id);
     if (alreadySpin) {
-        alert("Nice try! You've already spin the wheel.");
+        alert("Nice try! You've already spun the wheel.");
         location.reload();
         return;
     }
@@ -214,7 +215,7 @@ spinBtn.addEventListener('click', async () => {
             spinBtn.textContent = "Spin";
 
             // Announce to Discord announcement channel via webhook
-            if (DISCORD_WEBHOOK_URL && DISCORD_WEBHOOK_URL !== "https://chahinechahed5-lang.github.io/discount-wheel/") {
+            if (DISCORD_WEBHOOK_URL && DISCORD_WEBHOOK_URL !== "YOUR_DISCORD_WEBHOOK_URL_HERE") {
                 await fetch(DISCORD_WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
